@@ -1275,42 +1275,91 @@ function ProcessMapView({ onNavigate }) {
 
 // Pillar page — shows all processes for a pillar, clicking goes straight to flow
 function PillarPage({ pillar, onNavigate }) {
+  const procs = pillar.processes;
+  const A = 30, W = 210;
+
   return (
     <div className="fade-in" style={{ flex:1, overflowY:'auto' }}>
+      {/* Header */}
       <div style={{ background:`linear-gradient(135deg,${pillar.dark},${pillar.color})`, padding:'22px 28px', color:'#fff' }}>
         <div style={{ fontSize:10, fontWeight:800, color:'rgba(255,255,255,0.42)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:6 }}>Process Map</div>
         <h1 style={{ fontSize:22, fontWeight:900, marginBottom:4 }}>{pillar.name}</h1>
-        <div style={{ fontSize:12, color:'rgba(255,255,255,0.6)' }}>{pillar.lead} · {pillar.processes.length} processes</div>
+        <div style={{ fontSize:12, color:'rgba(255,255,255,0.6)' }}>{pillar.lead} · {procs.length} processes · click a process to drill in</div>
       </div>
-      <div style={{ padding:'20px 24px', display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(290px,1fr))', gap:14 }}>
-        {pillar.processes.map(proc => (
-          <button key={proc.id}
-            onClick={()=>onNavigate({type:'processFlow', proc, pillar})}
-            style={{
-              textAlign:'left', background:'#fff', border:'1.5px solid #E2E8F0',
-              borderTop:`4px solid ${pillar.color}`, borderRadius:12, padding:'16px 18px',
-              cursor:'pointer', transition:'all .13s', boxShadow:'0 1px 6px rgba(0,0,0,0.05)',
-            }}
-            onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 6px 20px rgba(0,0,0,0.1)';}}
-            onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.boxShadow='0 1px 6px rgba(0,0,0,0.05)';}}>
-            <div style={{ fontSize:14, fontWeight:700, color:'#0F172A', marginBottom:7, lineHeight:1.3 }}>{proc.name}</div>
-            <div style={{ fontSize:11, color:'#64748B', lineHeight:1.6, marginBottom:12 }}>{proc.desc}</div>
-            <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginBottom:12 }}>
-              {proc.roles.slice(0,3).map((r,i) => {
-                let emoji='👤';
-                for (const g of ROLE_GROUPS) { const m=g.roles.find(rl=>rl.title===r); if(m){emoji=m.emoji;break;} }
-                return <span key={i} style={{ fontSize:10, padding:'2px 8px', borderRadius:20, background:pillar.light, color:pillar.dark, fontWeight:600 }}>{emoji} {r}</span>;
+
+      {/* Chevron flow */}
+      <div style={{ overflowX:'auto', padding:'24px 24px 0' }}>
+        <div style={{ display:'flex', minWidth:'max-content' }}>
+          {procs.map((proc, i) => {
+            const isFirst = i === 0, isLast = i === procs.length - 1;
+            const clip = isFirst
+              ? `polygon(0 0, calc(100% - ${A}px) 0, 100% 50%, calc(100% - ${A}px) 100%, 0 100%)`
+              : isLast
+              ? `polygon(${A}px 0, 100% 0, 100% 100%, ${A}px 100%, 0 50%)`
+              : `polygon(${A}px 0, calc(100% - ${A}px) 0, 100% 50%, calc(100% - ${A}px) 100%, ${A}px 100%, 0 50%)`;
+            return (
+              <div key={proc.id}
+                onClick={() => onNavigate({ type:'processFlow', proc, pillar })}
+                style={{
+                  width:W, height:120, clipPath:clip,
+                  marginLeft: i > 0 ? -A : 0,
+                  zIndex: procs.length - i, position:'relative',
+                  background:`linear-gradient(160deg, ${pillar.dark} 0%, ${pillar.color} 100%)`,
+                  display:'flex', flexDirection:'column', justifyContent:'center',
+                  paddingLeft: isFirst ? 20 : A+12,
+                  paddingRight: isLast ? 20 : A+12,
+                  cursor:'pointer', transition:'filter .15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.filter='brightness(1.18)'}
+                onMouseLeave={e => e.currentTarget.style.filter=''}
+              >
+                <div style={{ fontSize:9, fontWeight:800, color:'rgba(255,255,255,0.5)', letterSpacing:'1.2px', marginBottom:5, textTransform:'uppercase' }}>Process {i+1}</div>
+                <div style={{ fontSize:12, fontWeight:800, color:'#fff', lineHeight:1.3, marginBottom:7 }}>{proc.name}</div>
+                <div style={{ fontSize:9, color:'rgba(255,255,255,0.5)', display:'flex', alignItems:'center', gap:3 }}>
+                  <span>{proc.steps?.length||0} steps</span>
+                  <span>·</span>
+                  <span>drill in ↓</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Detail panels below chevrons */}
+        <div style={{
+          display:'flex', minWidth:'max-content',
+          border:'1px solid #E2E8F0', borderTop:`3px solid ${pillar.color}`,
+          borderRadius:'0 0 12px 12px', background:'#fff', overflow:'hidden',
+          marginBottom:24,
+        }}>
+          {procs.map((proc, i) => (
+            <div key={proc.id} style={{
+              width:W, flexShrink:0, padding:'14px 16px',
+              borderLeft: i > 0 ? '1px solid #F1F5F9' : 'none',
+            }}>
+              <div style={{ fontSize:9, fontWeight:800, color:'#94A3B8', textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:8 }}>Key Roles</div>
+              {proc.roles.slice(0,3).map((r, ri) => {
+                let found=null, grp=null;
+                for (const g of ROLE_GROUPS) { const m=g.roles.find(rl=>rl.title===r); if(m){found=m;grp=g;break;} }
+                return (
+                  <div key={ri} style={{ display:'flex', alignItems:'center', gap:5, marginBottom:5 }}>
+                    <span style={{ fontSize:13 }}>{found?.emoji||'👤'}</span>
+                    <span style={{ fontSize:11, color:'#1E293B', fontWeight:500, lineHeight:1.3 }}>{r}</span>
+                  </div>
+                );
               })}
-              {proc.roles.length>3 && <span style={{ fontSize:10, color:'#94A3B8', alignSelf:'center' }}>+{proc.roles.length-3} more</span>}
+              {proc.roles.length > 3 && <div style={{ fontSize:10, color:'#94A3B8', marginTop:2 }}>+{proc.roles.length-3} more</div>}
+              <div style={{ height:1, background:'#F1F5F9', margin:'10px 0 8px' }} />
+              <div style={{ fontSize:9, fontWeight:800, color:'#94A3B8', textTransform:'uppercase', letterSpacing:'0.7px', marginBottom:6 }}>KPIs</div>
+              {proc.kpis.slice(0,2).map((k, ki) => (
+                <div key={ki} style={{ display:'flex', alignItems:'flex-start', gap:4, marginBottom:4 }}>
+                  <span style={{ color:pillar.color, fontSize:9, marginTop:2, flexShrink:0 }}>▸</span>
+                  <span style={{ fontSize:10, color:'#475569', lineHeight:1.4 }}>{k}</span>
+                </div>
+              ))}
             </div>
-            <div style={{ display:'flex', alignItems:'center', gap:10, fontSize:10, color:'#94A3B8' }}>
-              <span>📊 {proc.kpis.length} KPIs</span>
-              <span>🛠 {proc.tools.length} tools</span>
-              <span>👣 {proc.steps?.length||0} steps</span>
-              <span style={{ marginLeft:'auto', fontSize:11, fontWeight:700, color:pillar.color }}>View flow →</span>
-            </div>
-          </button>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
