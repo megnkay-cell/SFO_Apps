@@ -2244,19 +2244,27 @@ function AIChatPanel({ onClose, onGoto }) {
     const next = [...messages, {role:'user', content:msg}];
     setMessages(next); setInput(''); setLoading(true); setError('');
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version':'2023-06-01',
-          'anthropic-dangerous-direct-browser-access':'true',
-        },
-        body: JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:1024, system:sysPrompt, messages:next }),
-      });
+      const geminiMessages = next.map(m => ({
+        role: m.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: m.content }],
+      }));
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: sysPrompt }] },
+            contents: geminiMessages,
+            generationConfig: { maxOutputTokens: 1024 },
+          }),
+        }
+      );
       const data = await res.json();
       if (data.error) throw new Error(data.error.message);
-      setMessages(prev=>[...prev, {role:'assistant', content:data.content[0].text}]);
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!reply) throw new Error('No response from Gemini.');
+      setMessages(prev=>[...prev, {role:'assistant', content:reply}]);
     } catch(e) {
       setError(e.message||'Something went wrong. Check your API key.');
     } finally { setLoading(false); }
@@ -2294,24 +2302,24 @@ function AIChatPanel({ onClose, onGoto }) {
           <div style={{fontSize:22,color:'#fff'}}>✦</div>
           <div style={{flex:1}}>
             <div style={{fontSize:15,fontWeight:800,color:'#fff'}}>SC Assistant</div>
-            <div style={{fontSize:10,color:'rgba(255,255,255,0.6)'}}>Powered by Claude AI</div>
+            <div style={{fontSize:10,color:'rgba(255,255,255,0.6)'}}>Powered by Gemini</div>
           </div>
           <button onClick={onClose} style={{color:'rgba(255,255,255,0.7)',fontSize:18,padding:4,lineHeight:1}}>✕</button>
         </div>
         <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:36}}>
           <div style={{fontSize:44,marginBottom:16}}>🔑</div>
-          <h2 style={{fontSize:18,fontWeight:800,color:'#0F172A',textAlign:'center',marginBottom:10}}>Enter your Anthropic API Key</h2>
+          <h2 style={{fontSize:18,fontWeight:800,color:'#0F172A',textAlign:'center',marginBottom:10}}>Enter your Gemini API Key</h2>
           <p style={{fontSize:12,color:'#64748B',textAlign:'center',lineHeight:1.65,marginBottom:24,maxWidth:300}}>
-            The SC Assistant runs on the Claude API. Your key is stored only in your browser's local storage and sent only to Anthropic.
+            The SC Assistant uses Google Gemini (free tier). Your key is stored only in your browser's local storage.
           </p>
           <input autoFocus type="password" value={keyDraft} onChange={e=>setKeyDraft(e.target.value)}
-            onKeyDown={e=>e.key==='Enter'&&saveKey()} placeholder="sk-ant-api03-..."
+            onKeyDown={e=>e.key==='Enter'&&saveKey()} placeholder="AIzaSy..."
             style={{width:'100%',padding:'11px 14px',borderRadius:10,border:'1.5px solid #E2E8F0',fontSize:13,outline:'none',marginBottom:12,fontFamily:'monospace',color:'#0F172A'}}/>
           <button onClick={saveKey} style={{width:'100%',padding:'12px',borderRadius:10,fontSize:13,fontWeight:700,background:'linear-gradient(135deg,#7C3AED,#A855F7)',color:'#fff',border:'none',cursor:'pointer',marginBottom:10}}>
             Save &amp; Start Chatting →
           </button>
           {editingKey && <button onClick={()=>setEditingKey(false)} style={{fontSize:12,color:'#94A3B8',background:'none',border:'none',cursor:'pointer'}}>Cancel</button>}
-          <p style={{fontSize:10,color:'#CBD5E1',marginTop:16,textAlign:'center'}}>Get a free key at <span style={{color:'#94A3B8'}}>console.anthropic.com</span></p>
+          <p style={{fontSize:10,color:'#CBD5E1',marginTop:16,textAlign:'center'}}>Get a free key at <span style={{color:'#94A3B8'}}>aistudio.google.com</span></p>
         </div>
       </div>
     </div>
