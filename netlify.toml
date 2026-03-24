@@ -1,0 +1,7 @@
+[build]
+  # Self-contained static HTML — no build step required
+  command   = ""
+  publish   = "."
+
+[build.environment]
+  NODE_VERSION = "18"
