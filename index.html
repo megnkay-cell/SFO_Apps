@@ -2085,7 +2085,7 @@ function StepDetailPage({ step, stepNum, proc, pillar, onNavigate }) {
 // ═══════════════════════════════════════════════════════════════
 // LANDING PAGE
 // ═══════════════════════════════════════════════════════════════
-function LandingPage({ onViewProcess, onViewRole, onAskQuestion }) {
+function LandingPage({ onViewProcess, onViewRole, onAskQuestion, onViewPillar }) {
   const totalProcs  = PILLARS.reduce((a,p) => a + p.processes.length, 0);
   const totalRoles  = ROLE_GROUPS.reduce((a,g) => a + g.roles.length, 0);
   const stats = [
@@ -2094,16 +2094,23 @@ function LandingPage({ onViewProcess, onViewRole, onAskQuestion }) {
     { n: totalRoles,     label:'Roles' },
   ];
   const options = [
-    { icon:'💬', title:'Ask a Question',   desc:'Reach the right supply chain expert for your area — or send a general question to the SC team.', action:onAskQuestion, grad:'linear-gradient(135deg,#7C3AED 0%,#A855F7 100%)', glow:'rgba(124,58,237,0.38)' },
-    { icon:'⬡',  title:'View by Process',  desc:'Explore APQC-aligned process maps, step-by-step flows, KPIs, and tools across all six pillars.', action:onViewProcess, grad:'linear-gradient(135deg,#1D4ED8 0%,#3B82F6 100%)', glow:'rgba(29,78,216,0.38)' },
-    { icon:'👤', title:'View by Role',     desc:'Find your role, discover the processes you own, and access onboarding guides and JTA materials.',  action:onViewRole,    grad:'linear-gradient(135deg,#065F46 0%,#059669 100%)', glow:'rgba(6,95,70,0.38)' },
+    { icon:'💬', title:'Ask a Question',   desc:'Ask anything about supply chain processes, roles, tools, and KPIs.', action:onAskQuestion, grad:'linear-gradient(135deg,#7C3AED 0%,#A855F7 100%)', glow:'rgba(124,58,237,0.38)' },
+    { icon:'⬡',  title:'View by Process',  desc:'Explore APQC-aligned process maps, step-by-step flows, KPIs, and tools.', action:onViewProcess, grad:'linear-gradient(135deg,#1D4ED8 0%,#3B82F6 100%)', glow:'rgba(29,78,216,0.38)' },
+    { icon:'👤', title:'View by Role',     desc:'Find your role, the processes you own, and onboarding materials.',  action:onViewRole,    grad:'linear-gradient(135deg,#065F46 0%,#059669 100%)', glow:'rgba(6,95,70,0.38)' },
   ];
+
+  const A = 24, W = 150, H = 60;
+  const makeClip = (first, last) =>
+    first  ? `polygon(0 0, calc(100% - ${A}px) 0, 100% 50%, calc(100% - ${A}px) 100%, 0 100%)` :
+    last   ? `polygon(${A}px 0, 100% 0, 100% 100%, ${A}px 100%, 0 50%)` :
+             `polygon(${A}px 0, calc(100% - ${A}px) 0, 100% 50%, calc(100% - ${A}px) 100%, ${A}px 100%, 0 50%)`;
+
   return (
-    <div className="fade-in" style={{ flex:1, overflowY:'auto', background:'linear-gradient(160deg,#0F172A 0%,#1E3A5F 55%,#0F172A 100%)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'48px 24px', minHeight:0 }}>
+    <div className="fade-in" style={{ flex:1, overflowY:'auto', background:'linear-gradient(160deg,#0F172A 0%,#1E3A5F 55%,#0F172A 100%)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'40px 24px', minHeight:0 }}>
       <div style={{ width:62, height:62, borderRadius:16, background:'linear-gradient(135deg,#3B82F6,#8B5CF6)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:26, fontWeight:900, color:'#fff', marginBottom:18, boxShadow:'0 8px 32px rgba(59,130,246,0.45)' }}>L</div>
       <h1 style={{ color:'#fff', fontSize:34, fontWeight:900, letterSpacing:'-0.6px', marginBottom:10, textAlign:'center', lineHeight:1.1 }}>The Link 2.0</h1>
       <p style={{ color:'rgba(255,255,255,0.5)', fontSize:14, textAlign:'center', maxWidth:460, lineHeight:1.65, marginBottom:16 }}>Your single source of truth for Supply Chain process, role, and tool information.</p>
-      <div style={{ display:'flex', gap:28, marginBottom:46 }}>
+      <div style={{ display:'flex', gap:28, marginBottom:36 }}>
         {stats.map(s => (
           <div key={s.label} style={{ textAlign:'center' }}>
             <div style={{ fontSize:24, fontWeight:900, color:'#fff' }}>{s.n}</div>
@@ -2111,33 +2118,48 @@ function LandingPage({ onViewProcess, onViewRole, onAskQuestion }) {
           </div>
         ))}
       </div>
+
+      {/* Pillar chevrons */}
+      <div style={{ overflowX:'auto', width:'100%', display:'flex', justifyContent:'center', marginBottom:36 }}>
+        <div style={{ display:'flex', flexShrink:0 }}>
+          {PILLARS.map((p, i) => (
+            <div key={p.id}
+              onClick={() => onViewPillar(p)}
+              style={{
+                width:W, height:H, flexShrink:0,
+                clipPath: makeClip(i===0, i===PILLARS.length-1),
+                marginLeft: i > 0 ? -A : 0,
+                zIndex: PILLARS.length - i,
+                background: `linear-gradient(160deg, ${p.dark} 0%, ${p.color} 100%)`,
+                display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+                paddingLeft: i > 0 ? A : 0, paddingRight: A,
+                cursor:'pointer', transition:'filter .15s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.filter='brightness(1.2)'}
+              onMouseLeave={e => e.currentTarget.style.filter=''}
+            >
+              <div style={{ fontSize:11, fontWeight:800, color:'#fff', letterSpacing:'0.8px' }}>{p.name}</div>
+              <div style={{ fontSize:9, color:'rgba(255,255,255,0.6)', marginTop:2 }}>{p.processes.length} processes</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Option cards */}
       <div style={{ display:'flex', gap:18, maxWidth:880, width:'100%', justifyContent:'center', flexWrap:'wrap' }}>
         {options.map(opt => (
           <button key={opt.title} onClick={opt.action} style={{
-            flex:'1 1 240px', maxWidth:270, padding:'30px 22px 24px', borderRadius:18,
+            flex:'1 1 220px', maxWidth:260, padding:'26px 20px 22px', borderRadius:18,
             background:opt.grad, boxShadow:`0 8px 28px ${opt.glow}`,
             display:'flex', flexDirection:'column', alignItems:'flex-start',
             cursor:'pointer', border:'none', color:'#fff', textAlign:'left', transition:'transform .15s, box-shadow .15s',
           }}
           onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-5px)';e.currentTarget.style.boxShadow=`0 16px 40px ${opt.glow}`;}}
           onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.boxShadow=`0 8px 28px ${opt.glow}`;}}>
-            <div style={{ fontSize:34, marginBottom:14, lineHeight:1 }}>{opt.icon}</div>
-            <div style={{ fontSize:17, fontWeight:800, marginBottom:10, lineHeight:1.2 }}>{opt.title}</div>
+            <div style={{ fontSize:30, marginBottom:12, lineHeight:1 }}>{opt.icon}</div>
+            <div style={{ fontSize:16, fontWeight:800, marginBottom:8, lineHeight:1.2 }}>{opt.title}</div>
             <div style={{ fontSize:12, color:'rgba(255,255,255,0.72)', lineHeight:1.65, flex:1 }}>{opt.desc}</div>
-            <div style={{ marginTop:18, fontSize:12, fontWeight:700, color:'rgba(255,255,255,0.55)', display:'flex', alignItems:'center', gap:4 }}>Get started <span>→</span></div>
-          </button>
-        ))}
-      </div>
-      <div style={{ marginTop:36, display:'flex', gap:8, flexWrap:'wrap', justifyContent:'center' }}>
-        {PILLARS.map(p => (
-          <button key={p.id} onClick={onViewProcess} style={{
-            padding:'5px 16px', borderRadius:20, fontSize:11, fontWeight:700,
-            background:'rgba(255,255,255,0.08)', color:'rgba(255,255,255,0.6)',
-            border:'1px solid rgba(255,255,255,0.11)', cursor:'pointer', transition:'all .13s',
-          }}
-          onMouseEnter={e=>{e.currentTarget.style.background=p.color+'50';e.currentTarget.style.color='#fff';}}
-          onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.08)';e.currentTarget.style.color='rgba(255,255,255,0.6)';}}>
-            {p.name}
+            <div style={{ marginTop:16, fontSize:12, fontWeight:700, color:'rgba(255,255,255,0.55)', display:'flex', alignItems:'center', gap:4 }}>Get started <span>→</span></div>
           </button>
         ))}
       </div>
@@ -2539,6 +2561,7 @@ function App() {
             onViewProcess={() => handleViewChange('process')}
             onViewRole={() => handleViewChange('role')}
             onAskQuestion={() => setShowAIChat(true)}
+            onViewPillar={pillar => { setView('process'); setNavStack([{type:'pillar', pillar}]); }}
           />
         )}
         {!currentPage && view === 'process' && (
