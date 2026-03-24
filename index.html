@@ -1168,38 +1168,112 @@ function ChevronBar({ activePillar, onPillarClick }) {
 // ═══════════════════════════════════════════════════════════════
 // PROCESS MAP VIEW
 // ═══════════════════════════════════════════════════════════════
+// Strategy landing — shown when "View by Process" is selected
 function ProcessMapView({ onNavigate }) {
-  const [activePillar, setActivePillar] = useState(null);
-  const visible = activePillar ? PILLARS.filter(p => p.id === activePillar) : PILLARS;
-
+  const DESCS = {
+    plan:      'Demand forecasting, S&OP, supply planning, master scheduling, and inventory optimization aligned to business goals.',
+    source:    'Category strategy, supplier sourcing, contracting, performance management, and procurement execution.',
+    make:      'Manufacturing operations, quality assurance, asset maintenance, engineering, and technology management.',
+    logistics: 'Transportation management, warehousing, network design, replenishment, and global trade compliance.',
+    customer:  'Order management, collaborative replenishment, and end-to-end customer fulfillment performance.',
+    e2e:       'End-to-end performance management, risk & resilience, sustainability, and SC portfolio governance.',
+  };
   return (
-    <div style={{ display:'flex', flexDirection:'column', flex:1, overflow:'hidden' }}>
-      <ChevronBar activePillar={activePillar} onPillarClick={setActivePillar} />
-      <div style={{ flex:1, overflowX:'auto', overflowY:'auto', display:'flex', alignItems:'flex-start', padding:16, gap:10 }}>
-        {visible.map(pillar => (
-          <div key={pillar.id} className="fade-up" style={{
-            flex: activePillar ? '0 0 380px' : '1 1 0',
-            minWidth: activePillar ? 380 : 155,
-            borderRadius:12, overflow:'hidden',
-            boxShadow:'0 2px 14px rgba(0,0,0,0.09)',
-          }}>
-            <div style={{ background:pillar.color, padding:'13px 14px', textAlign:'center' }}>
-              <div style={{ fontSize:15, fontWeight:900, color:'#fff', letterSpacing:'0.5px' }}>{pillar.name}</div>
-              <div style={{ fontSize:10, color:pillar.textDim, fontWeight:500, marginTop:1 }}>{pillar.lead}</div>
+    <div className="fade-in" style={{ flex:1, overflowY:'auto' }}>
+      {/* Strategy header */}
+      <div style={{ background:'linear-gradient(135deg,#0F172A 0%,#1E3A5F 100%)', padding:'28px 32px', color:'#fff' }}>
+        <div style={{ fontSize:10, fontWeight:800, color:'rgba(255,255,255,0.38)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:8 }}>Supply Chain Strategy</div>
+        <h1 style={{ fontSize:22, fontWeight:900, marginBottom:10, lineHeight:1.2 }}>End-to-End Process Framework</h1>
+        <p style={{ fontSize:13, color:'rgba(255,255,255,0.62)', lineHeight:1.75, maxWidth:620 }}>
+          Our supply chain is organized across six integrated pillars — from Planning through Customer fulfillment — enabling end-to-end visibility, resilience, and efficiency. Select a pillar below to explore its processes.
+        </p>
+        {/* Chevron strip */}
+        <div style={{ display:'flex', marginTop:22, gap:0 }}>
+          {PILLARS.map((p,i) => {
+            const A=20, isFirst=i===0, isLast=i===PILLARS.length-1;
+            const clip = isFirst
+              ? `polygon(0 0,calc(100% - ${A}px) 0,100% 50%,calc(100% - ${A}px) 100%,0 100%)`
+              : isLast
+              ? `polygon(${A}px 0,100% 0,100% 100%,${A}px 100%,0 50%)`
+              : `polygon(${A}px 0,calc(100% - ${A}px) 0,100% 50%,calc(100% - ${A}px) 100%,${A}px 100%,0 50%)`;
+            return (
+              <button key={p.id} onClick={()=>onNavigate({type:'pillar',pillar:p})} style={{
+                flex:1, height:36, clipPath:clip, marginLeft:i>0?-A:0, zIndex:PILLARS.length-i, position:'relative',
+                background:p.color, border:'none', cursor:'pointer', fontSize:11, fontWeight:800, color:'#fff',
+                letterSpacing:'0.5px', transition:'filter .13s',
+              }}
+              onMouseEnter={e=>e.currentTarget.style.filter='brightness(1.18)'}
+              onMouseLeave={e=>e.currentTarget.style.filter=''}>{p.name}</button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Pillar cards */}
+      <div style={{ padding:'24px 28px', display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
+        {PILLARS.map(pillar => (
+          <button key={pillar.id} onClick={()=>onNavigate({type:'pillar',pillar})}
+            className="fade-up"
+            style={{ textAlign:'left', border:'none', cursor:'pointer', borderRadius:14, overflow:'hidden', background:'#fff', boxShadow:'0 2px 12px rgba(0,0,0,0.08)', transition:'transform .14s,box-shadow .14s' }}
+            onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 28px rgba(0,0,0,0.14)';}}
+            onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)';}}>
+            <div style={{ background:`linear-gradient(135deg,${pillar.dark},${pillar.color})`, padding:'18px 20px' }}>
+              <div style={{ fontSize:18, fontWeight:900, color:'#fff', letterSpacing:'0.3px' }}>{pillar.name}</div>
+              <div style={{ fontSize:11, color:'rgba(255,255,255,0.58)', marginTop:3 }}>{pillar.lead}</div>
             </div>
-            <div style={{ background:pillar.colBg, padding:'10px 8px', display:'flex', flexDirection:'column', gap:7 }}>
-              {pillar.processes.map(proc => (
-                <div key={proc.id} className="proc-card"
-                  onClick={() => onNavigate({ type:'process', proc, pillar })}
-                  style={{ borderColor:'rgba(0,0,0,0.08)' }}>
-                  <div style={{ fontSize:12, fontWeight:600, color:'#1E293B', lineHeight:1.35 }}>{proc.name}</div>
-                  <div style={{ fontSize:10, color:'#94A3B8', marginTop:3, display:'flex', alignItems:'center', gap:4 }}>
-                    View details <span style={{ fontSize:10 }}>→</span>
-                  </div>
-                </div>
-              ))}
+            <div style={{ padding:'16px 20px' }}>
+              <div style={{ fontSize:12, color:'#334155', lineHeight:1.65, marginBottom:14, minHeight:52 }}>{DESCS[pillar.id]}</div>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <span style={{ fontSize:11, fontWeight:700, color:pillar.color, background:pillar.light, padding:'3px 10px', borderRadius:20 }}>
+                  {pillar.processes.length} processes
+                </span>
+                <span style={{ fontSize:12, color:pillar.color, fontWeight:700 }}>Explore →</span>
+              </div>
             </div>
-          </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Pillar page — shows all processes for a pillar, clicking goes straight to flow
+function PillarPage({ pillar, onNavigate }) {
+  return (
+    <div className="fade-in" style={{ flex:1, overflowY:'auto' }}>
+      <div style={{ background:`linear-gradient(135deg,${pillar.dark},${pillar.color})`, padding:'22px 28px', color:'#fff' }}>
+        <div style={{ fontSize:10, fontWeight:800, color:'rgba(255,255,255,0.42)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:6 }}>Process Map</div>
+        <h1 style={{ fontSize:22, fontWeight:900, marginBottom:4 }}>{pillar.name}</h1>
+        <div style={{ fontSize:12, color:'rgba(255,255,255,0.6)' }}>{pillar.lead} · {pillar.processes.length} processes</div>
+      </div>
+      <div style={{ padding:'20px 24px', display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(290px,1fr))', gap:14 }}>
+        {pillar.processes.map(proc => (
+          <button key={proc.id}
+            onClick={()=>onNavigate({type:'processFlow', proc, pillar})}
+            style={{
+              textAlign:'left', background:'#fff', border:'1.5px solid #E2E8F0',
+              borderTop:`4px solid ${pillar.color}`, borderRadius:12, padding:'16px 18px',
+              cursor:'pointer', transition:'all .13s', boxShadow:'0 1px 6px rgba(0,0,0,0.05)',
+            }}
+            onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 6px 20px rgba(0,0,0,0.1)';}}
+            onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.boxShadow='0 1px 6px rgba(0,0,0,0.05)';}}>
+            <div style={{ fontSize:14, fontWeight:700, color:'#0F172A', marginBottom:7, lineHeight:1.3 }}>{proc.name}</div>
+            <div style={{ fontSize:11, color:'#64748B', lineHeight:1.6, marginBottom:12 }}>{proc.desc}</div>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginBottom:12 }}>
+              {proc.roles.slice(0,3).map((r,i) => {
+                let emoji='👤';
+                for (const g of ROLE_GROUPS) { const m=g.roles.find(rl=>rl.title===r); if(m){emoji=m.emoji;break;} }
+                return <span key={i} style={{ fontSize:10, padding:'2px 8px', borderRadius:20, background:pillar.light, color:pillar.dark, fontWeight:600 }}>{emoji} {r}</span>;
+              })}
+              {proc.roles.length>3 && <span style={{ fontSize:10, color:'#94A3B8', alignSelf:'center' }}>+{proc.roles.length-3} more</span>}
+            </div>
+            <div style={{ display:'flex', alignItems:'center', gap:10, fontSize:10, color:'#94A3B8' }}>
+              <span>📊 {proc.kpis.length} KPIs</span>
+              <span>🛠 {proc.tools.length} tools</span>
+              <span>👣 {proc.steps?.length||0} steps</span>
+              <span style={{ marginLeft:'auto', fontSize:11, fontWeight:700, color:pillar.color }}>View flow →</span>
+            </div>
+          </button>
         ))}
       </div>
     </div>
@@ -1488,7 +1562,9 @@ function Header({ navStack, view, onCrumbClick }) {
     crumbs.push({ label: view === 'process' ? '⬡ Process Map' : '👤 Role View', idx:0 });
   }
   navStack.forEach((item, i) => {
-    if (item.type === 'process') {
+    if (item.type === 'pillar') {
+      crumbs.push({ label: item.pillar.name, idx: i });
+    } else if (item.type === 'process') {
       crumbs.push({ label: item.pillar.name, idx: null });
       crumbs.push({ label: item.proc.name, idx: i });
     } else if (item.type === 'processFlow') {
@@ -2213,7 +2289,7 @@ function FeedbackBar({ view, currentPage }) {
   const [open, setOpen] = useState(false);
   const [msg,  setMsg]  = useState('');
   function getOwner() {
-    if (currentPage?.type === 'process' || currentPage?.type === 'processFlow' || currentPage?.type === 'stepDetail') {
+    if (currentPage?.type === 'pillar' || currentPage?.type === 'process' || currentPage?.type === 'processFlow' || currentPage?.type === 'stepDetail') {
       const p = currentPage.pillar;
       return { name: p.lead, email:`${p.id}-lead@yourcompany.com` };
     }
@@ -2332,6 +2408,9 @@ function App() {
         )}
         {!currentPage && view === 'role' && (
           <RoleMapView onNavigate={handleNavigate} />
+        )}
+        {currentPage?.type === 'pillar' && (
+          <PillarPage pillar={currentPage.pillar} onNavigate={handleNavigate} />
         )}
         {currentPage?.type === 'process' && (
           <ProcessDetailPage
