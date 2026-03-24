@@ -1168,29 +1168,86 @@ function ChevronBar({ activePillar, onPillarClick }) {
 // ═══════════════════════════════════════════════════════════════
 // PROCESS MAP VIEW
 // ═══════════════════════════════════════════════════════════════
-// Strategy landing — shown when "View by Process" is selected
+// Strategy landing — OGSMP visual + pillar chevrons
 function ProcessMapView({ onNavigate }) {
-  const DESCS = {
-    plan:      'Demand forecasting, S&OP, supply planning, master scheduling, and inventory optimization aligned to business goals.',
-    source:    'Category strategy, supplier sourcing, contracting, performance management, and procurement execution.',
-    make:      'Manufacturing operations, quality assurance, asset maintenance, engineering, and technology management.',
-    logistics: 'Transportation management, warehousing, network design, replenishment, and global trade compliance.',
-    customer:  'Order management, collaborative replenishment, and end-to-end customer fulfillment performance.',
-    e2e:       'End-to-end performance management, risk & resilience, sustainability, and SC portfolio governance.',
-  };
+  const OGSMP = [
+    { key:'O', label:'Objective', bg:'#0F172A', items:[
+      'Deliver world-class supply chain performance that enables sustainable business growth and an exceptional customer experience.',
+    ]},
+    { key:'G', label:'Goals', bg:'#1D4ED8', items:[
+      '99%+ customer OTIF',
+      'Reduce total SC cost by 5% YoY',
+      'Top-quartile forecast accuracy',
+      'Resilient, sustainable supply chain',
+    ]},
+    { key:'S', label:'Strategies', bg:'#0369A1', items:[
+      'Integrate E2E planning across all pillars',
+      'Develop strategic supplier partnerships',
+      'Drive manufacturing excellence (OEE)',
+      'Optimise logistics network footprint',
+      'Elevate customer fulfilment experience',
+      'Embed data-driven decision making',
+    ]},
+    { key:'M', label:'Measures', bg:'#C2410C', items:[
+      'OTIF %',
+      'SC Cost as % Revenue',
+      'Forecast MAPE & Bias',
+      'Inventory Turns / DOS',
+      'Supplier OTD %',
+      'OEE %',
+    ]},
+    { key:'P', label:'Projects', bg:'#065F46', items:[
+      'IBP / S&OP Implementation',
+      'Supplier Development Programme',
+      'Network Optimisation Review',
+      'Digital SC Hub — The Link 2.0',
+      'ESG & Sustainability Roadmap',
+    ]},
+  ];
+
+  const A = 22;
   return (
     <div className="fade-in" style={{ flex:1, overflowY:'auto' }}>
-      {/* Strategy header */}
-      <div style={{ background:'linear-gradient(135deg,#0F172A 0%,#1E3A5F 100%)', padding:'28px 32px', color:'#fff' }}>
-        <div style={{ fontSize:10, fontWeight:800, color:'rgba(255,255,255,0.38)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:8 }}>Supply Chain Strategy</div>
-        <h1 style={{ fontSize:22, fontWeight:900, marginBottom:10, lineHeight:1.2 }}>End-to-End Process Framework</h1>
-        <p style={{ fontSize:13, color:'rgba(255,255,255,0.62)', lineHeight:1.75, maxWidth:620 }}>
-          Our supply chain is organized across six integrated pillars — from Planning through Customer fulfillment — enabling end-to-end visibility, resilience, and efficiency. Select a pillar below to explore its processes.
-        </p>
-        {/* Chevron strip */}
-        <div style={{ display:'flex', marginTop:22, gap:0 }}>
+      {/* Dark header */}
+      <div style={{ background:'linear-gradient(135deg,#0F172A 0%,#1E3A5F 100%)', padding:'24px 28px 20px', color:'#fff' }}>
+        <div style={{ fontSize:10, fontWeight:800, color:'rgba(255,255,255,0.35)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:6 }}>Supply Chain Strategy</div>
+        <h1 style={{ fontSize:20, fontWeight:900, marginBottom:16, lineHeight:1.2 }}>OGSMP Strategic Framework</h1>
+
+        {/* OGSMP table */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:0, borderRadius:12, overflow:'hidden', border:'1px solid rgba(255,255,255,0.1)' }}>
+          {/* Headers */}
+          {OGSMP.map((col,i) => (
+            <div key={col.key} style={{
+              background: col.bg, padding:'12px 14px',
+              borderLeft: i>0 ? '1px solid rgba(255,255,255,0.1)' : 'none',
+              display:'flex', alignItems:'center', gap:10,
+            }}>
+              <div style={{ width:28, height:28, borderRadius:14, background:'rgba(255,255,255,0.15)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, fontWeight:900, color:'#fff', flexShrink:0 }}>{col.key}</div>
+              <div style={{ fontSize:11, fontWeight:800, color:'rgba(255,255,255,0.9)', textTransform:'uppercase', letterSpacing:'0.5px' }}>{col.label}</div>
+            </div>
+          ))}
+          {/* Body */}
+          {OGSMP.map((col,i) => (
+            <div key={col.key+'b'} style={{
+              background:'rgba(255,255,255,0.05)', padding:'14px 14px',
+              borderLeft: i>0 ? '1px solid rgba(255,255,255,0.08)' : 'none',
+              borderTop:'1px solid rgba(255,255,255,0.08)',
+            }}>
+              {col.items.map((item,j) => (
+                <div key={j} style={{ display:'flex', gap:6, marginBottom:7, alignItems:'flex-start' }}>
+                  <span style={{ color:'rgba(255,255,255,0.35)', fontSize:10, flexShrink:0, lineHeight:1.7 }}>›</span>
+                  <span style={{ fontSize:11, color:'rgba(255,255,255,0.78)', lineHeight:1.6 }}>{item}</span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Pillar chevron strip */}
+        <div style={{ fontSize:10, fontWeight:800, color:'rgba(255,255,255,0.35)', textTransform:'uppercase', letterSpacing:'1px', marginTop:22, marginBottom:10 }}>Select a pillar to explore processes</div>
+        <div style={{ display:'flex' }}>
           {PILLARS.map((p,i) => {
-            const A=20, isFirst=i===0, isLast=i===PILLARS.length-1;
+            const isFirst=i===0, isLast=i===PILLARS.length-1;
             const clip = isFirst
               ? `polygon(0 0,calc(100% - ${A}px) 0,100% 50%,calc(100% - ${A}px) 100%,0 100%)`
               : isLast
@@ -1198,40 +1255,19 @@ function ProcessMapView({ onNavigate }) {
               : `polygon(${A}px 0,calc(100% - ${A}px) 0,100% 50%,calc(100% - ${A}px) 100%,${A}px 100%,0 50%)`;
             return (
               <button key={p.id} onClick={()=>onNavigate({type:'pillar',pillar:p})} style={{
-                flex:1, height:36, clipPath:clip, marginLeft:i>0?-A:0, zIndex:PILLARS.length-i, position:'relative',
-                background:p.color, border:'none', cursor:'pointer', fontSize:11, fontWeight:800, color:'#fff',
-                letterSpacing:'0.5px', transition:'filter .13s',
+                flex:1, height:40, clipPath:clip, marginLeft:i>0?-A:0,
+                zIndex:PILLARS.length-i, position:'relative',
+                background:p.color, border:'none', cursor:'pointer',
+                fontSize:11, fontWeight:800, color:'#fff', letterSpacing:'0.5px', transition:'filter .13s',
               }}
-              onMouseEnter={e=>e.currentTarget.style.filter='brightness(1.18)'}
-              onMouseLeave={e=>e.currentTarget.style.filter=''}>{p.name}</button>
+              onMouseEnter={e=>e.currentTarget.style.filter='brightness(1.2)'}
+              onMouseLeave={e=>e.currentTarget.style.filter=''}>
+                <div>{p.name}</div>
+                <div style={{ fontSize:9, color:'rgba(255,255,255,0.55)', fontWeight:600, marginTop:1 }}>{p.processes.length} processes</div>
+              </button>
             );
           })}
         </div>
-      </div>
-
-      {/* Pillar cards */}
-      <div style={{ padding:'24px 28px', display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
-        {PILLARS.map(pillar => (
-          <button key={pillar.id} onClick={()=>onNavigate({type:'pillar',pillar})}
-            className="fade-up"
-            style={{ textAlign:'left', border:'none', cursor:'pointer', borderRadius:14, overflow:'hidden', background:'#fff', boxShadow:'0 2px 12px rgba(0,0,0,0.08)', transition:'transform .14s,box-shadow .14s' }}
-            onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 28px rgba(0,0,0,0.14)';}}
-            onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)';}}>
-            <div style={{ background:`linear-gradient(135deg,${pillar.dark},${pillar.color})`, padding:'18px 20px' }}>
-              <div style={{ fontSize:18, fontWeight:900, color:'#fff', letterSpacing:'0.3px' }}>{pillar.name}</div>
-              <div style={{ fontSize:11, color:'rgba(255,255,255,0.58)', marginTop:3 }}>{pillar.lead}</div>
-            </div>
-            <div style={{ padding:'16px 20px' }}>
-              <div style={{ fontSize:12, color:'#334155', lineHeight:1.65, marginBottom:14, minHeight:52 }}>{DESCS[pillar.id]}</div>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                <span style={{ fontSize:11, fontWeight:700, color:pillar.color, background:pillar.light, padding:'3px 10px', borderRadius:20 }}>
-                  {pillar.processes.length} processes
-                </span>
-                <span style={{ fontSize:12, color:pillar.color, fontWeight:700 }}>Explore →</span>
-              </div>
-            </div>
-          </button>
-        ))}
       </div>
     </div>
   );
@@ -1393,34 +1429,79 @@ function ProcessDetailPage({ proc, pillar, onNavigateToRole, onViewFlow }) {
 // ROLE MAP VIEW
 // ═══════════════════════════════════════════════════════════════
 function RoleMapView({ onNavigate }) {
+  const A = 28, W = 210, H = 82;
+  const makeClip = (first) =>
+    first
+      ? `polygon(0 0, calc(100% - ${A}px) 0, 100% 50%, calc(100% - ${A}px) 100%, 0 100%)`
+      : `polygon(0 0, calc(100% - ${A}px) 0, 100% 50%, calc(100% - ${A}px) 100%, 0 100%, ${A}px 50%)`;
+
   return (
-    <div style={{ flex:1, overflowY:'auto', padding:20 }}>
-      <div style={{ display:'flex', flexDirection:'column', gap:22 }}>
-        {ROLE_GROUPS.map(group => (
-          <div key={group.pillarId} className="fade-up">
-            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:12 }}>
-              <div style={{ background:group.color, color:'#fff', fontWeight:800, fontSize:13, padding:'5px 16px', borderRadius:7, letterSpacing:'0.6px' }}>{group.label}</div>
-              <div style={{ flex:1, height:2, background:group.light, borderRadius:1 }} />
-              <span style={{ fontSize:12, color:'#94A3B8' }}>{group.roles.length} role{group.roles.length !== 1 ? 's' : ''}</span>
-            </div>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(240px, 1fr))', gap:10 }}>
-              {group.roles.map(role => (
-                <div key={role.id} className="role-card" onClick={() => onNavigate({ type:'role', role, group })}>
-                  <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
-                    <div style={{ width:38, height:38, borderRadius:19, background:group.light, display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, flexShrink:0 }}>{role.emoji}</div>
-                    <div style={{ fontSize:13, fontWeight:700, color:'#0F172A', lineHeight:1.25 }}>{role.title}</div>
-                  </div>
-                  <p style={{ fontSize:11, color:'#64748B', lineHeight:1.5, display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>{role.desc}</p>
-                  <div style={{ marginTop:8, display:'flex', gap:4, flexWrap:'wrap' }}>
-                    {role.kpis.slice(0,2).map((k,i) => (
-                      <span key={i} style={{ fontSize:10, fontWeight:600, padding:'2px 7px', borderRadius:20, background:group.light, color:group.color }}>{k}</span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+    <div style={{ flex:1, overflowY:'auto' }}>
+      {/* Header */}
+      <div style={{ background:'linear-gradient(135deg,#0F172A,#1E3A5F)', padding:'20px 28px', color:'#fff' }}>
+        <div style={{ fontSize:11, fontWeight:700, letterSpacing:'1.5px', color:'rgba(255,255,255,0.5)', textTransform:'uppercase', marginBottom:4 }}>Role View</div>
+        <div style={{ fontSize:22, fontWeight:800, letterSpacing:'-0.3px' }}>Supply Chain Roles</div>
+        <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', marginTop:4 }}>Select a role group to explore responsibilities and processes</div>
+      </div>
+
+      {/* Scroll container */}
+      <div style={{ overflowX:'auto', overflowY:'visible', paddingBottom:32 }}>
+        <div style={{ minWidth: ROLE_GROUPS.length * (W - A) + A + 32, padding:'0 20px' }}>
+
+          {/* Chevron row */}
+          <div style={{ display:'flex', marginTop:20, marginBottom:0 }}>
+            {ROLE_GROUPS.map((group, i) => (
+              <div key={group.pillarId} style={{
+                width: W, height: H, flexShrink:0,
+                clipPath: makeClip(i === 0),
+                marginLeft: i > 0 ? -A : 0,
+                zIndex: ROLE_GROUPS.length - i,
+                background: `linear-gradient(135deg, ${group.color}DD, ${group.color})`,
+                display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+                cursor:'default',
+                paddingLeft: i > 0 ? A : 0,
+                paddingRight: A,
+              }}>
+                <div style={{ fontSize:13, fontWeight:800, color:'#fff', letterSpacing:'0.8px', textAlign:'center' }}>{group.label}</div>
+                <div style={{ fontSize:11, color:'rgba(255,255,255,0.7)', marginTop:2 }}>{group.roles.length} role{group.roles.length !== 1 ? 's' : ''}</div>
+              </div>
+            ))}
           </div>
-        ))}
+
+          {/* Role card columns */}
+          <div style={{ display:'flex', background:'#F8FAFC', borderTop:'2px solid #E2E8F0' }}>
+            {ROLE_GROUPS.map((group, i) => (
+              <div key={group.pillarId} style={{
+                width: W, flexShrink:0,
+                padding:'16px 12px',
+                borderRight: i < ROLE_GROUPS.length - 1 ? '1px solid #E2E8F0' : 'none',
+              }}>
+                {group.roles.map(role => (
+                  <button key={role.id} onClick={() => onNavigate({ type:'role', role, group })}
+                    style={{
+                      display:'flex', alignItems:'center', gap:8,
+                      padding:'10px 10px', borderRadius:10,
+                      border:`1.5px solid ${group.color}25`,
+                      background:'#fff', cursor:'pointer', width:'100%',
+                      marginBottom:8, textAlign:'left',
+                      boxShadow:'0 1px 3px rgba(0,0,0,0.05)',
+                      transition:'box-shadow 0.15s, border-color 0.15s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow=`0 3px 10px ${group.color}30`; e.currentTarget.style.borderColor=`${group.color}60`; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow='0 1px 3px rgba(0,0,0,0.05)'; e.currentTarget.style.borderColor=`${group.color}25`; }}
+                  >
+                    <div style={{ width:34, height:34, borderRadius:17, background:group.light, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, flexShrink:0 }}>{role.emoji}</div>
+                    <div style={{ minWidth:0 }}>
+                      <div style={{ fontSize:11, fontWeight:700, color:'#0F172A', lineHeight:1.3, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{role.title}</div>
+                      <div style={{ fontSize:10, color:'#94A3B8', lineHeight:1.4, marginTop:1, display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>{role.desc}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ))}
+          </div>
+
+        </div>
       </div>
     </div>
   );
