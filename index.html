@@ -1171,7 +1171,7 @@ function ChevronBar({ activePillar, onPillarClick }) {
 // Strategy landing — OGSMP visual + pillar chevrons
 function ProcessMapView({ onNavigate }) {
   const OGSMP = [
-    { key:'O', label:'Objective', bg:'#001A4E', items:[
+    { key:'O', label:'Objective', bg:'#10102a', items:[
       'Deliver world-class supply chain performance that enables sustainable business growth and an exceptional customer experience.',
     ]},
     { key:'G', label:'Goals', bg:'#1D4ED8', items:[
@@ -1209,7 +1209,7 @@ function ProcessMapView({ onNavigate }) {
   return (
     <div className="fade-in" style={{ flex:1, overflowY:'auto' }}>
       {/* Dark header */}
-      <div style={{ background:'linear-gradient(135deg,#001A4E 0%,#003087 100%)', padding:'24px 28px 20px', color:'#fff' }}>
+      <div style={{ background:'linear-gradient(135deg,#10102a 0%,#1e265e 100%)', padding:'24px 28px 20px', color:'#fff' }}>
         <div style={{ fontSize:10, fontWeight:800, color:'rgba(255,255,255,0.35)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:6 }}>Supply Chain Strategy</div>
         <h1 style={{ fontSize:20, fontWeight:900, marginBottom:16, lineHeight:1.2 }}>OGSMP Strategic Framework</h1>
 
@@ -1487,7 +1487,7 @@ function RoleMapView({ onNavigate }) {
   return (
     <div style={{ flex:1, overflowY:'auto' }}>
       {/* Header */}
-      <div style={{ background:'linear-gradient(135deg,#001A4E,#003087)', padding:'20px 28px', color:'#fff' }}>
+      <div style={{ background:'linear-gradient(135deg,#10102a,#1e265e)', padding:'20px 28px', color:'#fff' }}>
         <div style={{ fontSize:11, fontWeight:700, letterSpacing:'1.5px', color:'rgba(255,255,255,0.5)', textTransform:'uppercase', marginBottom:4 }}>Role View</div>
         <div style={{ fontSize:22, fontWeight:800, letterSpacing:'-0.3px' }}>Supply Chain Roles</div>
         <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', marginTop:4 }}>Select a role group to explore responsibilities and processes</div>
@@ -1713,21 +1713,22 @@ function Header({ navStack, view, onCrumbClick }) {
 
   return (
     <header style={{
-      height:56, background:'linear-gradient(135deg, #001A4E 0%, #003087 100%)',
+      height:56, background:'#1e265e',
       display:'flex', alignItems:'center', padding:'0 22px', gap:12, flexShrink:0,
       boxShadow:'0 2px 12px rgba(0,0,0,0.35)',
     }}>
       {/* Logo */}
-      <button onClick={() => onCrumbClick(-1)} style={{ display:'flex', alignItems:'center', gap:9, flexShrink:0 }}>
-        <div style={{ width:32, height:32, borderRadius:8, background:'#CF2027', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, overflow:'hidden' }}>
-          <svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
-            <rect width="32" height="32" fill="#CF2027"/>
-            <text x="16" y="22" textAnchor="middle" fontFamily="Inter,sans-serif" fontWeight="900" fontSize="16" fill="#fff">GM</text>
-          </svg>
-        </div>
+      <button onClick={() => onCrumbClick(-1)} style={{ display:'flex', alignItems:'center', gap:10, flexShrink:0 }}>
+        <img
+          src="https://www.generalmills.com/-/media/project/gmi/corporate/corporate-master/logo/general-mills-logo.svg?rev=d2599ad7ef0944bb99c4a5d7e5914d39"
+          alt="General Mills"
+          style={{ height:28, width:'auto', filter:'brightness(0) invert(1)', flexShrink:0 }}
+          onError={e => { e.target.style.display='none'; }}
+        />
+        <div style={{ width:1, height:22, background:'rgba(255,255,255,0.2)', flexShrink:0 }} />
         <div style={{ textAlign:'left' }}>
           <div style={{ color:'#fff', fontSize:14, fontWeight:800, letterSpacing:'-0.3px', lineHeight:1.1 }}>The Link 2.0</div>
-          <div style={{ color:'rgba(255,255,255,0.5)', fontSize:10, letterSpacing:'0.3px' }}>General Mills · Supply Chain</div>
+          <div style={{ color:'rgba(255,255,255,0.5)', fontSize:10, letterSpacing:'0.3px' }}>Supply Chain Hub</div>
         </div>
       </button>
 
@@ -2099,9 +2100,9 @@ function LandingPage({ onViewProcess, onViewRole, onAskQuestion, onViewPillar })
     { n: totalRoles,     label:'Roles' },
   ];
   const options = [
-    { icon:'💬', title:'Ask a Question',   desc:'Ask anything about supply chain processes, roles, tools, and KPIs.', action:onAskQuestion, grad:'linear-gradient(135deg,#CF2027 0%,#E84855 100%)', glow:'rgba(207,32,39,0.38)' },
-    { icon:'⬡',  title:'View by Process',  desc:'Explore APQC-aligned process maps, step-by-step flows, KPIs, and tools.', action:onViewProcess, grad:'linear-gradient(135deg,#003087 0%,#0057A8 100%)', glow:'rgba(0,48,135,0.38)' },
-    { icon:'👤', title:'View by Role',     desc:'Find your role, the processes you own, and onboarding materials.',  action:onViewRole,    grad:'linear-gradient(135deg,#00558B 0%,#0083C8 100%)', glow:'rgba(0,85,139,0.38)' },
+    { icon:'💬', title:'Ask a Question',   desc:'Ask anything about supply chain processes, roles, tools, and KPIs.', action:onAskQuestion, grad:'linear-gradient(135deg,#1e265e 0%,#19488d 100%)', glow:'rgba(30,38,94,0.45)' },
+    { icon:'⬡',  title:'View by Process',  desc:'Explore APQC-aligned process maps, step-by-step flows, KPIs, and tools.', action:onViewProcess, grad:'linear-gradient(135deg,#0073c5 0%,#19488d 100%)', glow:'rgba(0,115,197,0.38)' },
+    { icon:'👤', title:'View by Role',     desc:'Find your role, the processes you own, and onboarding materials.',  action:onViewRole,    grad:'linear-gradient(135deg,#008389 0%,#19488d 100%)', glow:'rgba(0,131,137,0.38)' },
   ];
 
   const A = 24, W = 150, H = 60;
@@ -2111,14 +2112,13 @@ function LandingPage({ onViewProcess, onViewRole, onAskQuestion, onViewPillar })
              `polygon(${A}px 0, calc(100% - ${A}px) 0, 100% 50%, calc(100% - ${A}px) 100%, ${A}px 100%, 0 50%)`;
 
   return (
-    <div className="fade-in" style={{ flex:1, overflowY:'auto', background:'linear-gradient(160deg,#001A4E 0%,#003087 55%,#001A4E 100%)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'40px 24px', minHeight:0 }}>
-      <div style={{ width:68, height:68, borderRadius:16, background:'#CF2027', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:18, boxShadow:'0 8px 32px rgba(207,32,39,0.45)', overflow:'hidden' }}>
-        <svg viewBox="0 0 68 68" width="68" height="68" xmlns="http://www.w3.org/2000/svg">
-          <rect width="68" height="68" fill="#CF2027"/>
-          <text x="34" y="46" textAnchor="middle" fontFamily="Inter,sans-serif" fontWeight="900" fontSize="30" fill="#fff">GM</text>
-        </svg>
-      </div>
-      <div style={{ fontSize:11, fontWeight:700, letterSpacing:'2px', color:'rgba(255,255,255,0.45)', textTransform:'uppercase', marginBottom:6 }}>General Mills</div>
+    <div className="fade-in" style={{ flex:1, overflowY:'auto', background:'linear-gradient(160deg,#10102a 0%,#1e265e 55%,#10102a 100%)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'40px 24px', minHeight:0 }}>
+      <img
+        src="https://www.generalmills.com/-/media/project/gmi/corporate/corporate-master/logo/general-mills-logo.svg?rev=d2599ad7ef0944bb99c4a5d7e5914d39"
+        alt="General Mills"
+        style={{ height:48, width:'auto', filter:'brightness(0) invert(1)', marginBottom:20 }}
+        onError={e => { e.target.style.display='none'; }}
+      />
       <h1 style={{ color:'#fff', fontSize:34, fontWeight:900, letterSpacing:'-0.6px', marginBottom:10, textAlign:'center', lineHeight:1.1 }}>The Link 2.0</h1>
       <p style={{ color:'rgba(255,255,255,0.5)', fontSize:14, textAlign:'center', maxWidth:460, lineHeight:1.65, marginBottom:16 }}>Your single source of truth for Supply Chain process, role, and tool information.</p>
       <div style={{ display:'flex', gap:28, marginBottom:36 }}>
